@@ -11,9 +11,11 @@
 ├── style.css               スタイル。デザイントークンは :root のカスタムプロパティ
 ├── app.js                  DOM 操作・状態保持・イベント処理（ブラウザ専用）
 ├── src/
-│   └── todo.js             Todo のロジック（純粋関数のみ。DOM に触れない）
+│   ├── todo.js             Todo のロジック（純粋関数のみ。DOM に触れない）
+│   └── storage.js          保存・復元（保存先は引数で受け取る。壊れた保存データを弾く）
 ├── test/
-│   └── todo.test.js        src/todo.js のテスト（node:test）
+│   ├── todo.test.js        src/todo.js のテスト（node:test）
+│   └── storage.test.js     src/storage.js のテスト（node:test）
 ├── package.json            スクリプト定義のみ。dependencies は追加しない
 └── .github/workflows/
     └── test.yml            push / PR でテストを実行
@@ -24,7 +26,8 @@
 | ファイル | 役割 | 触ってよいもの |
 | --- | --- | --- |
 | `src/todo.js` | ロジック | 引数だけ。`document`・`window`・`localStorage`・`Date.now()`・`Math.random()` は禁止 |
-| `app.js` | 配線 | DOM、`localStorage`、id の採番。ロジックは書かず `src/todo.js` を呼ぶ |
+| `src/storage.js` | 保存・復元 | 引数だけ。保存先（`localStorage` 相当）は**引数で受け取る**。グローバル参照は禁止 |
+| `app.js` | 配線 | DOM、`localStorage` の取得、id の採番。ロジックは書かず `src/` を呼ぶ |
 
 - **新しいロジックは必ず `src/todo.js` に純粋関数として追加し、テストを書く。**
   `app.js` に `if` が増えてきたら、それはロジックなので切り出すサイン。
@@ -40,7 +43,15 @@
 ```
 
 この形を変えるときは `src/todo.js`・`app.js`・`test/todo.test.js`、
-および `app.js` の `loadTodos()` にある localStorage の検証を合わせて更新する。
+および `src/storage.js` の `isTodo()` による検証と `test/storage.test.js` を
+合わせて更新する。
+
+### 保存の方針
+
+- 保存先は `localStorage`、キーは `todo-app.todos`、中身は Todo の配列の JSON。
+- **保存データは信用しない。** 不正な JSON・配列でない・要素の形が違う場合は、
+  例外を投げずに使える分だけを残す（`src/storage.js` の `parseTodos()`）。
+- 保存先が使えない環境（プライベートモード・容量超過）でもアプリは動かし続ける。
 
 ## テストの実行方法
 
