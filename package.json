@@ -1,0 +1,13 @@
+{
+  "name": "todo-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "素の HTML/CSS/JavaScript で作る Todo アプリ（ビルドツール・外部ライブラリなし）",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
