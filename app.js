@@ -13,6 +13,7 @@ import {
   removeTodo,
   toggleTodo,
 } from './src/todo.js';
+import { loadTodos, saveTodos } from './src/storage.js';
 
 const STORAGE_KEY = 'todo-app.todos';
 
@@ -25,51 +26,32 @@ const clearButton = document.getElementById('clear-completed');
 const filterButtons = document.querySelectorAll('[data-filter]');
 const itemTemplate = document.getElementById('todo-item-template');
 
+const storage = getStorage();
+
 /** @type {import('./src/todo.js').Todo[]} */
-let todos = loadTodos();
+let todos = loadTodos(storage, STORAGE_KEY);
 
 /** @type {'all'|'active'|'completed'} */
 let currentFilter = 'all';
 
 /**
- * localStorage から Todo を読み込む。
- * 保存が無い・壊れている場合は空配列を返す。
+ * 保存先として使う localStorage を返す。
  *
- * @returns {import('./src/todo.js').Todo[]}
+ * プライベートモードなどでは参照そのものが例外になるため、
+ * その場合は「保存しない」ダミーを返してアプリは動かし続ける。
+ *
+ * @returns {import('./src/storage.js').StorageLike}
  */
-function loadTodos() {
+function getStorage() {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === null) {
-      return [];
+    if (window.localStorage !== null) {
+      return window.localStorage;
     }
-
-    const parsed = JSON.parse(stored);
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed.filter(
-      (todo) =>
-        todo !== null &&
-        typeof todo === 'object' &&
-        typeof todo.id === 'string' &&
-        typeof todo.text === 'string' &&
-        typeof todo.done === 'boolean',
-    );
   } catch {
-    // localStorage が使えない環境（プライベートモード等）でも動かす
-    return [];
+    // 参照できない環境では下のダミーにフォールバックする
   }
-}
 
-/** 現在の Todo を localStorage に保存する。失敗しても無視する。 */
-function saveTodos() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-  } catch {
-    // 保存できなくてもアプリの動作は継続する
-  }
+  return { getItem: () => null, setItem: () => {} };
 }
 
 /**
@@ -92,7 +74,7 @@ function nextId() {
  */
 function update(nextTodos) {
   todos = nextTodos;
-  saveTodos();
+  saveTodos(storage, STORAGE_KEY, todos);
   render();
 }
 
