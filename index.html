@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14'>✓</text></svg>"
+    />
+  </head>
+  <body>
+    <main class="app">
+      <h1 class="app__title">Todo</h1>
+
+      <form id="todo-form" class="form" autocomplete="off">
+        <label class="visually-hidden" for="todo-input">新しいTodo</label>
+        <input
+          id="todo-input"
+          class="form__input"
+          type="text"
+          name="text"
+          placeholder="やることを入力"
+          maxlength="200"
+          required
+        />
+        <button class="form__submit" type="submit">追加</button>
+      </form>
+
+      <div class="filters" role="group" aria-label="表示の絞り込み">
+        <button class="filters__button" type="button" data-filter="all" aria-pressed="true">
+          すべて
+        </button>
+        <button class="filters__button" type="button" data-filter="active" aria-pressed="false">
+          未完了
+        </button>
+        <button class="filters__button" type="button" data-filter="completed" aria-pressed="false">
+          完了
+        </button>
+      </div>
+
+      <ul id="todo-list" class="list"></ul>
+
+      <p id="empty-message" class="empty" hidden>表示するTodoはありません。</p>
+
+      <footer class="footer">
+        <span id="todo-count" class="footer__count">未完了 0 件</span>
+        <button id="clear-completed" class="footer__clear" type="button">
+          完了済みを削除
+        </button>
+      </footer>
+    </main>
+
+    <template id="todo-item-template">
+      <li class="list__item">
+        <label class="list__label">
+          <input class="list__checkbox" type="checkbox" data-action="toggle" />
+          <span class="list__text"></span>
+        </label>
+        <button class="list__delete" type="button" data-action="remove">
+          削除
+        </button>
+      </li>
+    </template>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
