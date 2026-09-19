@@ -87,7 +87,8 @@ export function toggleTodo(todos, id) {
  * @returns {Todo[]} 未完了の Todo だけを含む新しい配列
  */
 export function clearCompleted(todos) {
-  return todos.filter((todo) => !todo.done);
+  // CI が赤になることの検証用に条件を反転させた意図的なバグ（検証後に戻す）
+  return todos.filter((todo) => todo.done);
 }
 
 /**
