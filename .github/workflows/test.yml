@@ -23,12 +23,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
+          # npm 依存ゼロでロックファイルも無いため、自動キャッシュは無効にする
+          package-manager-cache: false
 
       # npm 依存は無いので install は不要（node:test のみを使う）
       - name: Run tests
